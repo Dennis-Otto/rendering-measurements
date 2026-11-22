@@ -20,7 +20,7 @@ jobs:
           MEASURE_TOKEN: ${{ github.token }}
           LABEL: ${{ inputs.label }}
           ISSUES: "105 106 107"
-          CFG: '{"salt": "22b0458b8629142fca80be5fd328a921", "markers": [{"label": "title1", "len": 27, "hash": "f59749ba0835f84ef21a08c97109aa75"}, {"label": "title2", "len": 30, "hash": "76f7a2c977a7e9eac19e5514445b863a"}, {"label": "title3", "len": 32, "hash": "f7187e898cc13d008ad59589ad4df96b"}, {"label": "body_priv", "len": 26, "hash": "bd1b055926e779e7a9cf2c1984c23e20"}, {"label": "newname", "len": 23, "hash": "05efcba3caa13a887bb87c22bcffbf6f"}, {"label": "newname2", "len": 26, "hash": "8300d7eaadf26f25c5684f294f684582"}], "ids": [{"label": "private_issue_1", "h10": 663}, {"label": "private_issue_2", "h10": 261}, {"label": "private_issue_3", "h10": 890}]}'
+          CFG: '{"salt": "22b0458b8629142fca80be5fd328a921", "markers": [{"label": "title1", "len": 27, "hash": "f59749ba0835f84ef21a08c97109aa75"}, {"label": "title2", "len": 30, "hash": "76f7a2c977a7e9eac19e5514445b863a"}, {"label": "title3", "len": 32, "hash": "f7187e898cc13d008ad59589ad4df96b"}, {"label": "body_priv", "len": 26, "hash": "bd1b055926e779e7a9cf2c1984c23e20"}, {"label": "newname", "len": 23, "hash": "05efcba3caa13a887bb87c22bcffbf6f"}, {"label": "newname2", "len": 26, "hash": "8300d7eaadf26f25c5684f294f684582"}, {"label": "newname3", "len": 28, "hash": "9ea04b0a3ea303cd78030230fdc40446"}], "ids": [{"label": "private_issue_1", "h10": 663}, {"label": "private_issue_2", "h10": 261}, {"label": "private_issue_3", "h10": 890}]}'
         shell: python3 {0}
         run: |
           import hashlib
