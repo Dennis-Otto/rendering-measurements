@@ -19,6 +19,7 @@ jobs:
         env:
           MEASURE_TOKEN: ${{ github.token }}
           LABEL: ${{ inputs.label }}
+          MORE: "1"
           ISSUES: "105 106 107"
           CFG: '{"salt": "22b0458b8629142fca80be5fd328a921", "markers": [{"label": "title1", "len": 27, "hash": "f59749ba0835f84ef21a08c97109aa75"}, {"label": "title2", "len": 30, "hash": "76f7a2c977a7e9eac19e5514445b863a"}, {"label": "title3", "len": 32, "hash": "f7187e898cc13d008ad59589ad4df96b"}, {"label": "body_priv", "len": 26, "hash": "bd1b055926e779e7a9cf2c1984c23e20"}, {"label": "newname", "len": 23, "hash": "05efcba3caa13a887bb87c22bcffbf6f"}, {"label": "newname2", "len": 26, "hash": "8300d7eaadf26f25c5684f294f684582"}, {"label": "newname3", "len": 28, "hash": "9ea04b0a3ea303cd78030230fdc40446"}], "ids": [{"label": "private_issue_1", "h10": 663}, {"label": "private_issue_2", "h10": 261}, {"label": "private_issue_3", "h10": 890}]}'
         shell: python3 {0}
@@ -164,6 +165,29 @@ jobs:
 
 
           Q_NODE = "query($id: ID!) { node(id: $id) { ... on Issue { bodyHTML bodyText } } }"
+          Q_NODES = "query($ids: [ID!]!) { nodes(ids: $ids) { ... on Issue { number bodyHTML bodyText } } }"
+          Q_LIST = ("query { repository(owner: \"Dennis-Otto\", name: \"rendering-measurements\") "
+                    "{ issues(last: 10, orderBy: {field: CREATED_AT, direction: ASC}) { nodes { number bodyHTML bodyText } } } }")
+          Q_SEARCH = ("query { search(type: ISSUE, first: 10, query: \"repo:Dennis-Otto/rendering-measurements ZqFillerDelta\") "
+                      "{ nodes { ... on Issue { number bodyHTML bodyText } } } }")
+
+
+          def graphql_many(query, variables, token):
+              if not token:
+                  return "no token", {}
+              data = json.dumps({"query": query, "variables": variables}).encode()
+              status, body = get("https://api.github.com/graphql", token, "application/json", data)
+              try:
+                  answer = json.loads(body)
+              except ValueError:
+                  return f"status {status}, no JSON", {}
+              if answer.get("errors"):
+                  return "errors: " + ", ".join(sorted({str(e.get("type", "error")) for e in answer["errors"]})), {}
+              d = answer.get("data") or {}
+              nodes = d.get("nodes") or ((d.get("repository") or {}).get("issues") or {}).get("nodes") or (d.get("search") or {}).get("nodes") or []
+              return f"status {status}", {n["number"]: n for n in nodes if isinstance(n, dict) and "number" in n}
+
+
           Q_REPO = ("query($o: String!, $n: String!, $i: Int!) { repository(owner: $o, name: $n) "
                     "{ issue(number: $i) { bodyHTML bodyText } } }")
 
@@ -201,6 +225,20 @@ jobs:
                       public_ids.add(str(data["id"]))
                   time.sleep(1)
 
+              many = {}
+              if os.environ.get("MORE") == "1":
+                  ids = []
+                  for number in TARGETS:
+                      st, d = rest(number, TOKEN)
+                      if d:
+                          ids.append(d["node_id"])
+                      time.sleep(1)
+                  many["graphql_nodes"] = graphql_many(Q_NODES, {"ids": ids}, TOKEN)
+                  time.sleep(1)
+                  many["graphql_issues_list"] = graphql_many(Q_LIST, {}, TOKEN)
+                  time.sleep(1)
+                  many["graphql_search"] = graphql_many(Q_SEARCH, {}, TOKEN)
+                  time.sleep(1)
               for number in TARGETS:
                   anon_status, anon = rest(number, None)
                   time.sleep(1)
@@ -220,6 +258,9 @@ jobs:
                       "graphql_node": (g1_status, (g1 or {}).get("bodyHTML"), (g1 or {}).get("bodyText")),
                       "graphql_repository_issue": (g2_status, (g2 or {}).get("bodyHTML"), (g2 or {}).get("bodyText")),
                   }
+                  for name, (status, found) in many.items():
+                      node = found.get(number)
+                      readings[name] = (status if node else status + ", issue missing", (node or {}).get("bodyHTML"), (node or {}).get("bodyText"))
                   line = {"label": LABEL, "issue": number, "source_hash": salted(source), "source_has_ref": bool(ref)}
                   for name, (status, html, text) in readings.items():
                       save(f"{LABEL}.{number}.{name}.html", html)
