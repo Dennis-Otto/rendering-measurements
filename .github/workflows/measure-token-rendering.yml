@@ -1,0 +1,362 @@
+# One-off measurement for a design question of the issue assistant: what the
+# token of a workflow gets when it reads rendered texts, against a call without
+# a token. Started once by hand, then removed again. It prints no HTML and no
+# text of a link: only hashes, lengths and counts, and a hash and length only
+# where a reading equals the one without a token.
+name: Measure token rendering
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: read
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Read each text with the job's token and without a token
+        env:
+          MEASURE_TOKEN: ${{ github.token }}
+          URLS: |
+            https://github.com/Dennis-Otto/repo-pager/issues/41
+            https://github.com/Dennis-Otto/repo-blueprint/issues/212#issuecomment-6346747072
+            https://github.com/Dennis-Otto/issue-assistant/issues/205#issuecomment-6548059268
+            https://github.com/Dennis-Otto/repo-blueprint/issues/351#issuecomment-6261468926
+            https://github.com/mermaid-js/mermaid/issues/1227#issuecomment-595565727
+            https://github.com/Dennis-Otto/paperless-sync/issues/345#issuecomment-6618841428
+            https://github.com/Dennis-Otto/paperless-unified-search/issues/25#issuecomment-6036681251
+            https://github.com/Dennis-Otto/repo-blueprint/issues/683
+            https://github.com/Dennis-Otto/repo-pager/issues/123
+            https://github.com/Dennis-Otto/repo-blueprint/issues/290
+            https://github.com/Dennis-Otto/paperless-sync/issues/84
+            https://github.com/Dennis-Otto/dennis-otto.github.io/issues/46
+            https://github.com/Dennis-Otto/homedarts-for-autodarts/issues/107
+            https://github.com/Dennis-Otto/repo-blueprint/issues/657#issuecomment-6628065391
+            https://github.com/github/cmark-gfm/issues/195#issuecomment-5004647134
+            https://github.com/mermaid-js/mermaid/issues/6402#issuecomment-3931027871
+            https://github.com/Dennis-Otto/issue-assistant/issues/45#issuecomment-6140191677
+            https://github.com/github/cmark-gfm/issues/239#issuecomment-932055424
+            https://github.com/cli/cli/issues/5924#issuecomment-1335963084
+            https://github.com/cli/cli/issues/297#issuecomment-657164702
+            https://github.com/cli/cli/issues/9569#issuecomment-2365269383
+          # Hashes of the REST readings without a token, made by the same script on
+          # 2026-11-22; used only where the runner's own call without a token
+          # is not answered.
+          EXPECTED: |
+            {
+             "https://github.com/Dennis-Otto/repo-pager/issues/41": {
+              "html": "3b9ac79dc1302ad5",
+              "text": "d9ebb9587563970a"
+             },
+             "https://github.com/Dennis-Otto/repo-blueprint/issues/212#issuecomment-6346747072": {
+              "html": "4923a5a34d0e1bb9",
+              "text": "c872d93b904f547d"
+             },
+             "https://github.com/Dennis-Otto/issue-assistant/issues/205#issuecomment-6548059268": {
+              "html": "ea1d2c9c17b69d69",
+              "text": "5658edc57fcd78d9"
+             },
+             "https://github.com/Dennis-Otto/repo-blueprint/issues/351#issuecomment-6261468926": {
+              "html": "c4bd2f612eb4324b",
+              "text": "9bc142f94e0e507b"
+             },
+             "https://github.com/mermaid-js/mermaid/issues/1227#issuecomment-595565727": {
+              "html": "aabf1983c2226ef6",
+              "text": "12051e50060a5ea5"
+             },
+             "https://github.com/Dennis-Otto/paperless-sync/issues/345#issuecomment-6618841428": {
+              "html": "331753bc84b42911",
+              "text": "0939c6557b1aa958"
+             },
+             "https://github.com/Dennis-Otto/paperless-unified-search/issues/25#issuecomment-6036681251": {
+              "html": "f794384eb78aec88",
+              "text": "d09b8218993c3c89"
+             },
+             "https://github.com/Dennis-Otto/repo-blueprint/issues/683": {
+              "html": "66987de2fe0ed09e",
+              "text": "e08b798411318a88"
+             },
+             "https://github.com/Dennis-Otto/repo-pager/issues/123": {
+              "html": "7cb9652585649d64",
+              "text": "a763e3a7f518dcda"
+             },
+             "https://github.com/Dennis-Otto/repo-blueprint/issues/290": {
+              "html": "a3a1c51a815e92d6",
+              "text": "b61e6232fa72e825"
+             },
+             "https://github.com/Dennis-Otto/paperless-sync/issues/84": {
+              "html": "4abe570526d3ca35",
+              "text": "5c94a9d65d16b53a"
+             },
+             "https://github.com/Dennis-Otto/dennis-otto.github.io/issues/46": {
+              "html": "e37fdf7b59d1341f",
+              "text": "85f51e2fcf2f1e31"
+             },
+             "https://github.com/Dennis-Otto/homedarts-for-autodarts/issues/107": {
+              "html": "eba5c4d1a2e34dbb",
+              "text": "ec974864d4128d60"
+             },
+             "https://github.com/Dennis-Otto/repo-blueprint/issues/657#issuecomment-6628065391": {
+              "html": "419e39b0480a35a7",
+              "text": "945dae9959b34d2d"
+             },
+             "https://github.com/github/cmark-gfm/issues/195#issuecomment-5004647134": {
+              "html": "46688fd00357fdb2",
+              "text": "f34576d948b1ce7b"
+             },
+             "https://github.com/mermaid-js/mermaid/issues/6402#issuecomment-3931027871": {
+              "html": "302756cce8fd2f94",
+              "text": "afb7ce3a92c2864c"
+             },
+             "https://github.com/Dennis-Otto/issue-assistant/issues/45#issuecomment-6140191677": {
+              "html": "bfd1980d91422a32",
+              "text": "ddc51555af51fbe2"
+             },
+             "https://github.com/github/cmark-gfm/issues/239#issuecomment-932055424": {
+              "html": "067b6340bc813a8b",
+              "text": "0b392a3235059a60"
+             },
+             "https://github.com/cli/cli/issues/5924#issuecomment-1335963084": {
+              "html": "fc60b86e94943ef7",
+              "text": "c769b401b36e177d"
+             },
+             "https://github.com/cli/cli/issues/297#issuecomment-657164702": {
+              "html": "e837ddefb0f576fe",
+              "text": "758820b3ae2302f1"
+             },
+             "https://github.com/cli/cli/issues/9569#issuecomment-2365269383": {
+              "html": "f086834c42f260bd"
+             }
+            }
+        shell: python3 {0}
+        run: |
+          import hashlib
+          import json
+          import os
+          import re
+          import sys
+          import time
+          import urllib.error
+          import urllib.request
+          from html.parser import HTMLParser
+
+          TOKEN = os.environ.get("MEASURE_TOKEN") or None
+          SHOW_ALL = os.environ.get("SHOW_ALL") == "1"
+          URL = re.compile(r"https://github\.com/([^/]+)/([^/]+)/issues/(\d+)(?:#issuecomment-(\d+))?$")
+          CLASSES = ("issue-link", "commit-link", "user-mention", "team-mention")
+          SOURCE_REF = re.compile(r"(?<![\w/])(?:[\w.-]+/[\w.-]+)?#\d+\b")
+          CROSS_REF = re.compile(r"(?<![\w/])[\w.-]+/[\w.-]+#\d+\b")
+          URLS = [u.strip() for u in os.environ.get("URLS", "").splitlines() if u.strip()]
+          try:
+              EXPECTED = json.loads(os.environ.get("EXPECTED") or "{}")
+          except ValueError:
+              EXPECTED = {}
+
+
+          def get(url, token=None, accept="application/vnd.github.full+json", data=None):
+              headers = {"Accept": accept, "User-Agent": "rendering-measurement"}
+              if token:
+                  headers["Authorization"] = "Bearer " + token
+              request = urllib.request.Request(url, data=data, headers=headers)
+              try:
+                  with urllib.request.urlopen(request, timeout=30) as response:
+                      return response.status, response.read().decode("utf-8", "replace"), dict(response.headers)
+              except urllib.error.HTTPError as error:
+                  return error.code, error.read().decode("utf-8", "replace"), dict(error.headers)
+              except (urllib.error.URLError, TimeoutError, OSError) as error:
+                  return 0, type(error).__name__, {}
+
+
+          def norm(html):
+              html = re.sub(r'(user-content-fn(?:ref)?-[^"]*?-)[0-9a-f]{32}', r"\1X", html)
+              html = re.sub(r'data-(run-id|identity)="[^"]*"', r'data-\1=""', html)
+              return re.sub(r"jwt=[^\"&]+", "jwt=X", html)
+
+
+          class Text(HTMLParser):
+              """Collects the words of the HTML, those outside links apart, and the links by class."""
+
+              def __init__(self):
+                  super().__init__(convert_charrefs=True)
+                  self.words, self.outside, self.depth = [], [], 0
+                  self.links = dict.fromkeys(CLASSES, 0)
+                  self.links["other"] = 0
+
+              def handle_starttag(self, tag, attrs):
+                  if tag != "a":
+                      return
+                  self.depth += 1
+                  classes = (dict(attrs).get("class") or "").split()
+                  kind = next((c for c in CLASSES if c in classes), "other")
+                  self.links[kind] += 1
+
+              def handle_endtag(self, tag):
+                  if tag == "a" and self.depth:
+                      self.depth -= 1
+
+              def handle_data(self, data):
+                  self.words += data.split()
+                  if not self.depth:
+                      self.outside.append(data)
+
+
+          def parse(html):
+              parser = Text()
+              parser.feed(html)
+              parser.close()
+              return parser
+
+
+          def plain(ref, outside):
+              return re.search(r"(?<![\w/#])" + re.escape(ref) + r"\b", outside) is not None
+
+
+          def sha(text):
+              return hashlib.sha256(text.encode()).hexdigest()[:16]
+
+
+          def html_facts(html, source, baseline):
+              """What may be printed of one rendering: hash and length only where it equals the
+              reading without a token; counts always; never a text."""
+              if not isinstance(html, str):
+                  return {"state": "absent"}
+              n = norm(html)
+              p = parse(n)
+              outside = " ".join(p.outside)
+              refs = SOURCE_REF.findall(source or "")
+              cross = CROSS_REF.findall(source or "")
+              facts = {"state": "read", "words": len(p.words), "links": p.links,
+                       "source_refs": len(refs), "source_refs_plain": sum(plain(r, outside) for r in refs),
+                       "cross_refs": len(cross), "cross_refs_plain": sum(plain(r, outside) for r in cross)}
+              h = sha(n)
+              facts["equals_reading_without_token"] = None if baseline is None else h == baseline
+              if SHOW_ALL or h == baseline:
+                  facts.update(sha256=h, length=len(html))
+              else:
+                  facts["sha256"] = "withheld: not the reading without a token"
+              return facts
+
+
+          def text_facts(text, baseline):
+              if not isinstance(text, str):
+                  return {"state": "absent"}
+              h = sha(text)
+              facts = {"state": "read", "words": len(text.split()),
+                       "equals_reading_without_token": None if baseline is None else h == baseline}
+              if SHOW_ALL or h == baseline:
+                  facts.update(sha256=h, length=len(text))
+              else:
+                  facts["sha256"] = "withheld: not the reading without a token"
+              return facts
+
+
+          def not_measured(status, body, headers):
+              lower = body.lower() if isinstance(body, str) else ""
+              if status in (403, 429) and "secondary rate limit" in lower:
+                  why = "secondary rate limit"
+              elif status in (403, 429) and (headers.get("X-RateLimit-Remaining") == "0" or "rate limit" in lower):
+                  why = "rate limit"
+              elif status == 0:
+                  why = "no answer: " + body
+              else:
+                  why = "status " + str(status)
+              return {"state": "not measured", "status": status, "why": why,
+                      "retry_after": headers.get("Retry-After"), "reset": headers.get("X-RateLimit-Reset")}
+
+
+          def load(body):
+              try:
+                  data = json.loads(body)
+              except ValueError:
+                  return None
+              return data if isinstance(data, dict) else None
+
+
+          def rest(path, token):
+              status, body, headers = get("https://api.github.com/" + path, token)
+              if status != 200:
+                  return None, not_measured(status, body, headers)
+              data = load(body)
+              if data is None:
+                  return None, {"state": "not measured", "status": status, "why": "no JSON object"}
+              return data, {"status": status, "rate_remaining": headers.get("X-RateLimit-Remaining")}
+
+
+          QUERY = ("query($id: ID!) { rateLimit { cost remaining } node(id: $id) { "
+                   "... on Issue { bodyHTML bodyText } ... on IssueComment { bodyHTML bodyText } } }")
+
+
+          def graphql(node_id, token):
+              if not token:
+                  return None, {"state": "not measured", "why": "GraphQL answers no call without a token"}
+              data = json.dumps({"query": QUERY, "variables": {"id": node_id}}).encode()
+              status, body, headers = get("https://api.github.com/graphql", token, "application/json", data)
+              if status != 200:
+                  return None, not_measured(status, body, headers)
+              answer = load(body)
+              if answer is None:
+                  return None, {"state": "not measured", "status": status, "why": "no JSON object"}
+              if answer.get("errors"):
+                  kinds = sorted({str(e.get("type", "error")) for e in answer["errors"] if isinstance(e, dict)})
+                  return None, {"state": "not measured", "status": status, "why": "errors: " + ", ".join(kinds)}
+              data = answer.get("data")
+              if not isinstance(data, dict):
+                  return None, {"state": "not measured", "status": status, "why": "data is null"}
+              node = data.get("node")
+              if not isinstance(node, dict):
+                  return None, {"state": "not measured", "status": status, "why": "node is null", "rate": data.get("rateLimit")}
+              return node, {"status": status, "rate": data.get("rateLimit")}
+
+
+          def diff(a, b):
+              """Counts of what one rendering holds beyond the other, never the words themselves."""
+              if not isinstance(a, str) or not isinstance(b, str):
+                  return "not measured"
+              pa, pb = parse(norm(a)), parse(norm(b))
+              wa, wb = list(pa.words), list(pb.words)
+              only_a = len([w for w in wa if w not in wb])
+              only_b = len([w for w in wb if w not in wa])
+              return {"equal": norm(a) == norm(b), "words_only_token": only_a, "words_only_without": only_b,
+                      "links_token": sum(pa.links.values()), "links_without": sum(pb.links.values())}
+
+
+          summary = {"texts": 0, "rest_without_token_read": 0, "graphql_token_read": 0}
+          for url in URLS:
+              match = URL.match(url)
+              if not match:
+                  print(json.dumps({"url": url, "state": "not an issue address"}), flush=True)
+                  continue
+              owner, name, number, comment = match.groups()
+              path = f"repos/{owner}/{name}/issues/" + (f"comments/{comment}" if comment else number)
+              anon, r_anon = rest(path, None)
+              time.sleep(1)
+              with_token, r_token = rest(path, TOKEN) if TOKEN else (None, {"state": "no token"})
+              time.sleep(1)
+              source = (with_token or anon or {}).get("body") or ""
+              expected = EXPECTED.get(url) or {}
+              base_html = sha(norm(anon["body_html"])) if anon and isinstance(anon.get("body_html"), str) else expected.get("html")
+              base_text = sha(anon["body_text"]) if anon and isinstance(anon.get("body_text"), str) else expected.get("text")
+              node_id = (with_token or anon or {}).get("node_id")
+              node, g_token = graphql(node_id, TOKEN) if node_id else (None, {"state": "no node id"})
+              time.sleep(1)
+              anon_html = (anon or {}).get("body_html")
+              gql_html = (node or {}).get("bodyHTML")
+              rest_html = (with_token or {}).get("body_html")
+              line = {
+                  "url": url,
+                  "baseline": "this run" if anon else ("expected hashes, read without a token on 2026-11-22" if expected else "none"),
+                  "rest_without_token": dict(r_anon, body_html=html_facts(anon_html, source, base_html) if anon else None,
+                                             body_text=text_facts((anon or {}).get("body_text"), base_text) if anon else None),
+                  "rest_token": dict(r_token, body_html=html_facts(rest_html, source, base_html) if with_token else None,
+                                     body_text=text_facts((with_token or {}).get("body_text"), base_text) if with_token else None),
+                  "graphql_token": dict(g_token, bodyHTML=html_facts(gql_html, source, base_html) if node else None,
+                                        bodyText=text_facts((node or {}).get("bodyText"), base_text) if node else None),
+                  "graphql_token_vs_without": diff(gql_html, anon_html),
+                  "rest_token_vs_without": diff(rest_html, anon_html),
+              }
+              summary["texts"] += 1
+              summary["rest_without_token_read"] += anon is not None
+              summary["graphql_token_read"] += node is not None
+              print(json.dumps(line), flush=True)
+          print(json.dumps({"summary": summary}), flush=True)
+          sys.exit(0)
