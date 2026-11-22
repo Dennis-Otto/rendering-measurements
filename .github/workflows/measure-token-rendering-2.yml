@@ -194,6 +194,9 @@ jobs:
               public_ids = set()
               for number in TARGETS + [CONTROL]:
                   status, data = rest(number, None)
+                  if not data and TOKEN:
+                      time.sleep(1)
+                      status, data = rest(number, TOKEN)
                   if data:
                       public_ids.add(str(data["id"]))
                   time.sleep(1)
@@ -201,12 +204,12 @@ jobs:
               for number in TARGETS:
                   anon_status, anon = rest(number, None)
                   time.sleep(1)
-                  source = (anon or {}).get("body") or ""
-                  m = re.search(r"Dennis-Otto/rendering-measurements-private#\d+|https://github\.com/Dennis-Otto/rendering-measurements-private/issues/\d+", source)
-                  ref = m.group(0) if m else ""
-                  node_id = (anon or {}).get("node_id")
                   tok_status, tok = rest(number, TOKEN) if TOKEN else ("no token", None)
                   time.sleep(1)
+                  source = (anon or tok or {}).get("body") or ""
+                  m = re.search(r"Dennis-Otto/rendering-measurements-private#\d+|https://github\.com/Dennis-Otto/rendering-measurements-private/issues/\d+", source)
+                  ref = m.group(0) if m else ""
+                  node_id = (anon or tok or {}).get("node_id")
                   g1_status, g1 = graphql(Q_NODE, {"id": node_id}, TOKEN)
                   time.sleep(1)
                   g2_status, g2 = graphql(Q_REPO, {"o": "Dennis-Otto", "n": "rendering-measurements", "i": number}, TOKEN)
